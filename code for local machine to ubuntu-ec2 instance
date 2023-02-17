@@ -1,0 +1,53 @@
+resource "aws_instance" "ec2_example" {
+    ami = "ami-0f8ca728008ff5af4"  
+    instance_type = "t2.micro" 
+    key_name= "aws_key"
+    vpc_security_group_ids = [aws_security_group.main.id]
+
+  provisioner "file" {
+    source      = "C:/Users/Hemalatha/Documents/Tickets.txt"
+    destination = "/home/ubuntu/test-file.txt"
+  }
+  connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file("C:/Users/Hemalatha/.ssh/id_rsa")
+      timeout     = "4m"
+   }
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress                = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "aws_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbfv1jGbQUF1TYVHmiTgpeX5/4CJ2r9UrUWh9NACA/S79wEDje39FGjHIFksgpNsGwE6HLGIntuehAzfQjw2v0RXHyGomE2uPawNOeZHg9cP5ggsPL0kDN9IrHNv4g/Le93iDEy+nPl/qvtWF0hPKWmyNn8oB/X9MFe6EpQ3ksHskdZ98tZakxx2SPy+iFI+otC9Y8zPHPtA5/Krr99XEzOR9YRN11Q6gRx3wd3+WzukHuAhKPERlZ3elmx5HTSrwx23bVIYbc4BmYx4Nes/FtY6FzDqF5mktXZ9VCnMktEGkOJ+Qo30RMbk9CReFO5L+/3INvaRp2TZBnAp7yPBqD Hemalatha@SKCHNRNT17"
+
+}
